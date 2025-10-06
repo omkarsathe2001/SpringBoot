@@ -4,6 +4,9 @@ import com.bitsndbytes.product.dto.CategoryDTO;
 import com.bitsndbytes.product.dto.ProductDTO;
 import com.bitsndbytes.product.entity.Category;
 import com.bitsndbytes.product.entity.Product;
+import com.bitsndbytes.product.exception.CategoryNotFoundException;
+import com.bitsndbytes.product.exception.ProductAlreadyExitsException;
+import com.bitsndbytes.product.exception.ProductNotFoundException;
 import com.bitsndbytes.product.mapper.ProductMapper;
 import com.bitsndbytes.product.repository.CategoryRepository;
 import com.bitsndbytes.product.repository.ProductRepository;
@@ -27,17 +30,24 @@ public class ProductService {
         /**
          *  name, description, price, categoryId
          * **/
-        categoryRepository.findById(dto.getCategoryId())
-                .orElseThrow(()-> new RuntimeException("Category Id does not found..."));
+        // Check if product name already exists
+        productRepository.findByName(dto.getName())
+                .ifPresent(p -> {
+                    throw new ProductAlreadyExitsException("Product with Name = " + dto.getName() + " already exists.");
+                });
 
-        //DTO -> Entity
+        // Check if category exists
+        categoryRepository.findById(dto.getCategoryId())
+                .orElseThrow(() -> new CategoryNotFoundException("Category Id = " + dto.getCategoryId() + " not found."));
+
+        // DTO -> Entity
         Product product = ProductMapper.toProductEntity(dto);
+
+        // Save product
         product = productRepository.save(product);
 
-        //Entity -> DTO
-        ProductDTO productDTO = ProductMapper.toProductDTO(product);
-        return productDTO;
-
+        // Entity -> DTO
+        return ProductMapper.toProductDTO(product);
     }
 
 //    Get all Product
@@ -52,7 +62,7 @@ public class ProductService {
 //    Get Product by id
     public ProductDTO getProductById(Long id){
         Product product = productRepository.findById(id)
-                .orElseThrow(()-> new RuntimeException("Product Id not found..."));
+                .orElseThrow(()-> new ProductNotFoundException("Product Id = "+id+" not found..."));
         return ProductMapper.toProductDTO(product);
     }
 
@@ -66,7 +76,7 @@ public class ProductService {
 //    Update Product
     public ProductDTO updateProductById(Long id, ProductDTO dto){
         Product product = productRepository.findById(id)
-                .orElseThrow(()-> new RuntimeException("Product Id not found..."));
+                .orElseThrow(()-> new ProductNotFoundException("Product Id = "+id+" not found..."));
 
         // Update existing fields
         product.setName(dto.getName());
@@ -76,7 +86,7 @@ public class ProductService {
         // If category is being updated
         if (dto.getCategoryId() != null){
             Category category = categoryRepository.findById(dto.getCategoryId())
-                    .orElseThrow(()-> new RuntimeException("Category not found with id " + dto.getCategoryId()));
+                    .orElseThrow(()-> new CategoryNotFoundException("Category Id = "+dto.getCategoryId()+" not found..."));
             product.setCategory(category);
         }
 
