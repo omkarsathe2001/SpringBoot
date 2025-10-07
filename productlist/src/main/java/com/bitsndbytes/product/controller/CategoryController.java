@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,6 +29,7 @@ public class CategoryController {
             summary = "Create a new category",
             description = "REST API to create a new category"
     )
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PostMapping
     public ResponseEntity<CategoryDTO> createCategory(
             @Parameter(description = "Category object to be created", required = true)
@@ -62,6 +64,7 @@ public class CategoryController {
             summary = "Delete category by ID",
             description = "Delete a category using its ID"
     )
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteCategory(
             @Parameter(description = "ID of the category to delete", required = true)
@@ -75,6 +78,7 @@ public class CategoryController {
             summary = "Update an existing category",
             description = "Update category details using its ID"
     )
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<CategoryDTO> updateCategory(
             @Parameter(description = "ID of the category to update", required = true)

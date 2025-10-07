@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,6 +29,7 @@ public class PrductController {
             summary = "Create a new product",
             description = "Creates a new product with name, description, price, and categoryId"
     )
+    @PreAuthorize("hasAuthority('ROLE_SELLER')")
     @PostMapping
     public ResponseEntity<ProductDTO> createProduct(
             @Parameter(description = "Product object to be created", required = true)
@@ -62,6 +64,7 @@ public class PrductController {
             summary = "Delete a product by ID",
             description = "Deletes a product from the database using its ID"
     )
+    @PreAuthorize("hasAuthority('ROLE_SELLER')")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteProduct(
             @Parameter(description = "ID of the product to delete", required = true)
@@ -74,6 +77,7 @@ public class PrductController {
             summary = "Update an existing product by ID",
             description = "Updates product details using its ID"
     )
+    @PreAuthorize("hasAuthority('ROLE_SELLER')")
     @PutMapping("/{id}")
     public ResponseEntity<ProductDTO> updateProduct(
             @Parameter(description = "ID of the product to update", required = true)
