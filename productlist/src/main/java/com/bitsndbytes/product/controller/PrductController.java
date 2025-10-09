@@ -64,11 +64,9 @@ public class PrductController {
             summary = "Delete a product by ID",
             description = "Deletes a product from the database using its ID"
     )
-    @PreAuthorize("hasAuthority('ROLE_SELLER')")
+    @PreAuthorize("hasAnyAuthority('ROLE_SELLER')")
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteProduct(
-            @Parameter(description = "ID of the product to delete", required = true)
-            @PathVariable Long id) {
+    public ResponseEntity<String> deleteProduct(@PathVariable Long id) {
         return ResponseEntity.ok(productService.deleteProductById(id));
     }
 
