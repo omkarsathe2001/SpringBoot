@@ -46,6 +46,9 @@ public class CategoryService {
 
     //Delete Categories
     public String deleteCategoryById(Long id){
+        if (!categoryRepository.existsById(id)){
+            throw new CategoryNotFoundException("Category Id = "+id+" not found...");
+        }
         categoryRepository.deleteById(id);
         return "Category "+id+" has been deleted successfully...";
     }
